@@ -232,6 +232,7 @@ private fun Modifier.circleProgress(
     numberOfTicks: Long,
     strokeWidth: Dp = 4.dp
 ) = drawWithCache {
+    // I would choose the way to calculate the color for each step (instead of using gradient)
     val brush = Brush.sweepGradient(
         0f to startColor,
         0.3f to startColor,
@@ -240,6 +241,7 @@ private fun Modifier.circleProgress(
         center = size.center
     )
 
+    // Math ... It works! Somehow...
     val circleSize = 360
     val stepSize = circleSize / numberOfTicks
     val centerX = size.width / 2f
