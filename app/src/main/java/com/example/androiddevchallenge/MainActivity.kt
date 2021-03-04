@@ -17,14 +17,17 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,12 +38,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
@@ -93,12 +98,14 @@ class MainActivity : AppCompatActivity() {
 fun MyApp() {
     val viewModel: TimerViewModel = viewModel()
     val isTimerRunning by viewModel.isRunning.observeAsState(false)
+    val isResetVisible by viewModel.isResetVisible.observeAsState(false)
     val currentTime by viewModel.timeInSeconds.observeAsState(TIME_LIMIT)
     val progress by viewModel.progress.observeAsState(1f)
 
-    val animatedProgress = remember { Animatable(1f) }
+    val animatedProgress = remember { Animatable(progress) }
 
     LaunchedEffect(currentTime) {
+        Log.d("App", "Triggered! Current time: $currentTime")
         animatedProgress.animateTo(
             targetValue = progress,
             animationSpec = tween(300)
@@ -133,7 +140,9 @@ fun MyApp() {
 
                 ControlPanel(
                     isTimerRunning = isTimerRunning,
+                    showReset = isResetVisible,
                     onToggleClick = { viewModel.toggleTimer() },
+                    onResetClick = { viewModel.reset() },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .navigationBarsPadding()
@@ -148,10 +157,26 @@ fun MyApp() {
 @Composable
 fun ControlPanel(
     isTimerRunning: Boolean,
+    showReset: Boolean,
     onToggleClick: () -> Unit,
+    onResetClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        AnimatedVisibility(showReset) {
+            OutlinedButton(
+                onClick = onResetClick,
+                modifier = Modifier.size(56.dp),
+                shape = CircleShape,
+            ) {
+                Icon(imageVector = Icons.Filled.RestartAlt, contentDescription = "Reset")
+            }
+        }
+
         Button(
             onClick = onToggleClick,
             modifier = Modifier.size(56.dp),

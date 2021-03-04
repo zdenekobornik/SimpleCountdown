@@ -76,6 +76,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02'
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "dev.chrisbanes.accompanist:accompanist-insets:0.6.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
 
     testImplementation 'junit:junit:4.13.2'
 

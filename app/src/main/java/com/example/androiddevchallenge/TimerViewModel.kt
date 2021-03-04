@@ -18,6 +18,7 @@ package com.example.androiddevchallenge
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,11 +30,16 @@ class TimerViewModel : ViewModel() {
     private val _isRunning = MutableLiveData<Boolean>()
     val isRunning: LiveData<Boolean> get() = _isRunning
 
+    val isResetVisible: LiveData<Boolean> get() = timeInSeconds.map { time ->
+        time != TIME_LIMIT
+    }
+
     private val _timeInSeconds = MutableLiveData<Long>()
     val timeInSeconds: LiveData<Long> get() = _timeInSeconds
 
-    private val _progress = MutableLiveData<Float>()
-    val progress: LiveData<Float> get() = _progress
+    val progress: LiveData<Float> = timeInSeconds.map { time ->
+        time / TIME_LIMIT.toFloat()
+    }
 
     private var timerJob: Job? = null
 
@@ -60,12 +66,11 @@ class TimerViewModel : ViewModel() {
             while (isActive) {
                 delay(1000)
 
-                val currentTime = (_timeInSeconds.value ?: TIME_LIMIT) - 1
+                val newTime = getCurrentTime() - 1
 
-                _timeInSeconds.value = currentTime
-                _progress.value = currentTime / TIME_LIMIT.toFloat()
+                _timeInSeconds.value = newTime
 
-                if (currentTime <= 0) {
+                if (newTime <= 0) {
                     stopTimer()
                     break
                 }
@@ -81,6 +86,12 @@ class TimerViewModel : ViewModel() {
 
     private fun getCurrentTime(): Long {
         return _timeInSeconds.value ?: TIME_LIMIT
+    }
+
+    fun reset() {
+        stopTimer()
+
+        _timeInSeconds.value = TIME_LIMIT
     }
 
     companion object {
