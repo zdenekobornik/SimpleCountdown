@@ -103,7 +103,7 @@ fun MyApp() {
 
     val animatedProgress = remember { Animatable(progress) }
 
-    LaunchedEffect(currentTime) {
+    LaunchedEffect(progress) {
         animatedProgress.animateTo(
             targetValue = progress,
             animationSpec = tween(300)
