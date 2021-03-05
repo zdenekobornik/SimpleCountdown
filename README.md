@@ -16,6 +16,7 @@ Simple 1-minute timer. Powered by Jetpack Compose
 Interesting part of this project is the circular background of the timer. It's drawn to the canvas
 and animations are done using Animatable.
 
+Inspiration: https://dribbble.com/shots/7077105-Daily-UI-challenge-014-Countdown-Timer
 
 ## :camera_flash: Screenshots
 <!-- You can add more screenshots here if you like -->
