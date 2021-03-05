@@ -209,12 +209,14 @@ fun MyApp() {
 }
 
 fun getTimeFromPosition(center: Offset, position: Offset): Int {
-    val degrees = (atan2(
-        center.y - position.y.toDouble(),
-        center.x - position.x.toDouble()
-    ) * 180.0 / PI).toFloat()
+    val degrees = (
+        atan2(
+            center.y - position.y.toDouble(),
+            center.x - position.x.toDouble()
+        ) * 180.0 / PI
+        ).toFloat()
 
-    val cleanDegrees = (degrees - 90 + 360) % 360;
+    val cleanDegrees = (degrees - 90 + 360) % 360
 
     return (cleanDegrees / (360 / TIME_LIMIT)).toInt()
 }
