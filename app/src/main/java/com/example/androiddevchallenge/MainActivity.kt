@@ -17,7 +17,6 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -105,7 +104,6 @@ fun MyApp() {
     val animatedProgress = remember { Animatable(progress) }
 
     LaunchedEffect(currentTime) {
-        Log.d("App", "Triggered! Current time: $currentTime")
         animatedProgress.animateTo(
             targetValue = progress,
             animationSpec = tween(300)
@@ -232,7 +230,7 @@ private fun Modifier.circleProgress(
     numberOfTicks: Long,
     strokeWidth: Dp = 4.dp
 ) = drawWithCache {
-    // I would choose the way to calculate the color for each step (instead of using gradient)
+    // For the next time I would choose the way to calculate the color for each step (instead of using gradient)
     val brush = Brush.sweepGradient(
         0f to startColor,
         0.3f to startColor,
