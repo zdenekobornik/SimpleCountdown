@@ -94,6 +94,10 @@ class TimerViewModel : ViewModel() {
         _timeInSeconds.value = TIME_LIMIT
     }
 
+    fun setTime(time: Int) {
+        _timeInSeconds.value = time.toLong()
+    }
+
     companion object {
         const val TIME_LIMIT = 60L
     }
