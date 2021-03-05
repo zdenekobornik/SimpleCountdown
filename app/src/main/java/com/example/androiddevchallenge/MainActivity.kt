@@ -83,6 +83,7 @@ import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.round
 import kotlin.math.sin
 
 class MainActivity : AppCompatActivity() {
@@ -218,7 +219,7 @@ fun getTimeFromPosition(center: Offset, position: Offset): Int {
 
     val cleanDegrees = (degrees - 90 + 360) % 360
 
-    return (cleanDegrees / (360 / TIME_LIMIT)).toInt()
+    return round(cleanDegrees / (360 / TIME_LIMIT)).toInt()
 }
 
 @OptIn(ExperimentalAnimationApi::class)
