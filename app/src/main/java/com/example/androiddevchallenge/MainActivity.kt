@@ -44,8 +44,8 @@ import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,8 +53,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.androiddevchallenge.TimerViewModel.Companion.TIME_LIMIT
 import com.example.androiddevchallenge.ui.theme.MyTheme
 import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
@@ -79,11 +77,8 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
-    val viewModel: TimerViewModel = viewModel()
-    val isTimerRunning by viewModel.isRunning.observeAsState(false)
-    val isResetVisible by viewModel.isResetVisible.observeAsState(false)
-    val currentTime by viewModel.timeInSeconds.observeAsState(TIME_LIMIT)
-    val progress by viewModel.progress.observeAsState(1f)
+    val scope = rememberCoroutineScope()
+    val state = remember { TimerState(scope) }
 
     Scaffold(
         topBar = {
@@ -98,26 +93,26 @@ fun MyApp() {
                 modifier = Modifier.fillMaxSize()
             ) {
                 Timer(
+                    state = state,
                     startColor = MaterialTheme.colors.secondary,
                     endColor = MaterialTheme.colors.primary,
                     disabledColor = MaterialTheme.colors.onBackground.copy(alpha = .1f),
-                    progress = progress,
-                    numberOfTicks = TIME_LIMIT,
-                    isTouchEnabled = isTimerRunning,
-                    onTimeSelected = viewModel::setTime,
                     modifier = Modifier
                         .aspectRatio(1f)
                         .padding(56.dp)
                         .align(Alignment.TopCenter)
                 ) {
-                    TimerText(text = currentTime.toString(), isTimerRunning = isTimerRunning)
+                    TimerText(
+                        text = state.timeInSeconds.toString(),
+                        isTimerRunning = state.isRunning
+                    )
                 }
 
                 ControlPanel(
-                    isTimerRunning = isTimerRunning,
-                    showReset = isResetVisible,
-                    onToggleClick = viewModel::toggleTimer,
-                    onResetClick = viewModel::reset,
+                    isTimerRunning = state.isRunning,
+                    showReset = state.isResetVisible,
+                    onToggleClick = state::toggleTimer,
+                    onResetClick = state::reset,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .navigationBarsPadding()

@@ -15,7 +15,6 @@
  */
 package com.example.androiddevchallenge
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -47,38 +46,35 @@ import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toOffset
 import kotlin.math.PI
-import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
-import kotlin.math.round
 import kotlin.math.sin
 
 @Composable
 fun Timer(
+    state: TimerState,
     startColor: Color,
     endColor: Color,
-    progress: Float,
     disabledColor: Color,
-    numberOfTicks: Long,
-    isTouchEnabled: Boolean,
-    onTimeSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    numberOfTicks: Long = TimerState.TIME_LIMIT,
+    isTouchEnabled: Boolean = state.isRunning,
     content: @Composable BoxScope.() -> Unit
 ) {
     var origin by remember { mutableStateOf(Offset.Zero) }
     var position by remember { mutableStateOf(Offset.Zero) }
     var touchInProgress by remember { mutableStateOf(false) }
 
-    val animatedProgress = remember { Animatable(progress) }
+    val animatedProgress = remember { Animatable(state.progress) }
 
-    LaunchedEffect(progress) {
+    LaunchedEffect(state.progress) {
         if (touchInProgress) {
             animatedProgress.snapTo(
-                targetValue = progress
+                targetValue = state.progress
             )
         } else {
             animatedProgress.animateTo(
-                targetValue = progress,
+                targetValue = state.progress,
                 animationSpec = tween(300)
             )
         }
@@ -100,7 +96,7 @@ fun Timer(
                         touchInProgress = true
                         position = offset
 
-                        onTimeSelected(getTimeFromPosition(origin, position))
+                        state.setTimeByPosition(origin, position)
                     },
                     onDragEnd = {
                         touchInProgress = false
@@ -112,7 +108,7 @@ fun Timer(
                         if (isTouchEnabled) return@detectDragGestures
 
                         position += amount
-                        onTimeSelected(getTimeFromPosition(origin, position))
+                        state.setTimeByPosition(origin, position)
 
                         change.consumeAllChanges()
                     }
@@ -129,7 +125,6 @@ fun TimerText(text: String, isTimerRunning: Boolean, modifier: Modifier = Modifi
     val timeTextScale = remember { Animatable(1f) }
 
     LaunchedEffect(text) {
-        Log.d("Timer", "Animation text run!")
         if (isTimerRunning) {
             // Didn't work with the repeatable :/. Maybe I need to try something different than Animatable
             timeTextScale.animateTo(
@@ -223,17 +218,4 @@ private fun Modifier.circleProgress(
             }
         }
     }
-}
-
-private fun getTimeFromPosition(center: Offset, position: Offset): Int {
-    val degrees = (
-        atan2(
-            center.y - position.y.toDouble(),
-            center.x - position.x.toDouble()
-        ) * 180.0 / PI
-        ).toFloat()
-
-    val cleanDegrees = (degrees - 90 + 360) % 360
-
-    return round(cleanDegrees / (360 / TimerViewModel.TIME_LIMIT)).toInt()
 }
