@@ -58,7 +58,6 @@ fun Timer(
     disabledColor: Color,
     modifier: Modifier = Modifier,
     numberOfTicks: Long = TimerState.TIME_LIMIT,
-    isTouchEnabled: Boolean = state.isRunning,
     content: @Composable BoxScope.() -> Unit
 ) {
     var origin by remember { mutableStateOf(Offset.Zero) }
@@ -105,7 +104,7 @@ fun Timer(
                         touchInProgress = false
                     },
                     onDrag = { change, amount ->
-                        if (isTouchEnabled) return@detectDragGestures
+                        if (state.isRunning) return@detectDragGestures
 
                         position += amount
                         state.setTimeByPosition(origin, position)
